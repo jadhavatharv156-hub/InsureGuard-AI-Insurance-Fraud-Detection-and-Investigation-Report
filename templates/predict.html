@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4 space-y-8">
+
+    <!-- INPUT FORM CARD -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div>
+            <h1 class="text-2xl font-bold text-white">Enterprise AI Fraud Risk Assessment</h1>
+            <p class="text-xs text-slate-400 mt-1">Submit claim metadata, evidence files, and entity parameters for multi-modal analysis.</p>
+        </div>
+
+        <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Policy Type</label>
+                    <select name="policy_type" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        {% for opt in options.policy_type %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Vehicle / Asset Category</label>
+                    <select name="vehicle_category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        {% for opt in options.vehicle_category %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Incident Severity</label>
+                    <select name="incident_severity" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        {% for opt in options.incident_severity %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Authorities Contacted</label>
+                    <select name="authorities_contacted" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        {% for opt in options.authorities_contacted %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Claim Amount ($)</label>
+                    <input type="number" step="0.01" name="claim_amount" required placeholder="e.g. 12500.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Policy Age (Months)</label>
+                    <input type="number" name="policy_age_months" required value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+            </div>
+
+            <!-- REAL-WORLD EXTENSION FIELDS -->
+            <div class="pt-4 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Claimant Phone Number</label>
+                    <input type="text" name="contact_phone" placeholder="+1 (555) 019-2834" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Repair Shop ID / Name</label>
+                    <input type="text" name="repair_shop_id" placeholder="SHOP-9901" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Incident Date</label>
+                    <input type="date" name="incident_date" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+            </div>
+
+            <!-- FILE FORENSICS UPLOAD -->
+            <div class="pt-2">
+                <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Evidence Attachment (Damage Photo / Repair Estimate)</label>
+                <input type="file" name="evidence_file" class="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
+                <p class="text-[10px] text-slate-500 mt-1">Uploaded files will be scanned for SHA-256 duplicate image reuse and EXIF header authenticity.</p>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-indigo-600/30">
+                Execute Real-World Risk Assessment
+            </button>
+        </form>
+    </div>
+
+    <!-- PREDICTION RESULT DISPLAY -->
+    {% if result and claim %}
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+                <h2 class="text-xl font-bold text-white">Evaluation Findings</h2>
+                <p class="text-xs text-slate-400">Claim File #CLM-{{ claim.id }}</p>
+            </div>
+            <span class="px-3 py-1 text-xs font-bold rounded-full {% if result.prediction == 1 %}bg-red-500/20 text-red-400 border border-red-500/30{% else %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% endif %}">
+                {{ 'FLAGGED FOR FRAUD RISK' if result.prediction == 1 else 'LEGITIMATE CLAIM' }}
+            </span>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+            <div>
+                <p class="text-xs text-slate-400 uppercase font-semibold">Calculated Risk Score</p>
+                <p class="text-3xl font-extrabold {% if result.prediction == 1 %}text-red-400{% else %}text-emerald-400{% endif %}">
+                    {{ "%.1f"|format(result.risk_score * 100) }}%
+                </p>
+            </div>
+        </div>
+
+        {% if result.risk_factors %}
+        <div class="space-y-3">
+            <p class="text-xs uppercase font-semibold text-slate-400">Detected Forensics & Risk Drivers</p>
+            {% for factor in result.risk_factors %}
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-bold text-white">{{ factor.factor }}</p>
+                    <p class="text-xs text-slate-400">{{ factor.detail }}</p>
+                </div>
+                <span class="px-2 py-0.5 text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 rounded">
+                    {{ factor.impact }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- CONDITIONAL ACTIONS -->
+        <div class="pt-4 border-t border-slate-800">
+            {% if result.prediction == 1 %}
+                <div class="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs space-y-3">
+                    <p class="text-amber-400 font-semibold">
+                        Notice: PDF export is locked due to high fraud probability and forensic flags.
+                    </p>
+                    <p class="text-slate-300">
+                        If you believe this decision is incorrect, request a manual investigation review by a claims adjuster.
+                    </p>
+                    {% if claim.investigation_requested %}
+                        <div class="p-3 bg-slate-950 rounded-lg text-emerald-400 font-semibold text-center border border-emerald-500/30">
+                            Investigation Request Pending Review (Status: {{ claim.status }})
+                        </div>
+                    {% else %}
+                        <form action="{{ url_for('apply_investigation', claim_id=claim.id) }}" method="POST">
+                            <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs uppercase rounded-xl transition shadow-lg shadow-amber-600/30">
+                                Apply for Manual Investigation
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <a href="{{ url_for('download_report', claim_id=claim.id) }}" class="w-full sm:flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase rounded-xl text-center transition shadow-lg shadow-emerald-600/30">
+                        Download PDF Assessment Report
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="w-full sm:w-auto px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase rounded-xl text-center transition">
+                        Back to Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
