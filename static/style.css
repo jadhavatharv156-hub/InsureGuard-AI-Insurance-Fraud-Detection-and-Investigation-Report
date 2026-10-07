@@ -1,0 +1,400 @@
+/* =====================================================================
+   InsureGuard – UI Theme (graphics / look & feel only)
+   ===================================================================== */
+:root {
+    --ig-bg: #060912;
+    --ig-surface: rgba(15, 23, 42, 0.62);
+    --ig-surface-solid: #0c1322;
+    --ig-border: rgba(148, 163, 184, 0.14);
+    --ig-border-hi: rgba(129, 140, 248, 0.45);
+    --ig-accent: #6366f1;
+    --ig-accent-2: #8b5cf6;
+    --ig-cyan: #22d3ee;
+    --ig-green: #10b981;
+    --ig-red: #f43f5e;
+    --ig-amber: #f59e0b;
+    --ig-text: #e2e8f0;
+    --ig-muted: #94a3b8;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--ig-bg);
+    background-image:
+        radial-gradient(900px 500px at 8% -8%, rgba(99, 102, 241, 0.20), transparent 60%),
+        radial-gradient(800px 500px at 100% 0%, rgba(34, 211, 238, 0.10), transparent 55%),
+        radial-gradient(700px 500px at 50% 115%, rgba(139, 92, 246, 0.12), transparent 60%),
+        linear-gradient(rgba(148,163,184,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,0.035) 1px, transparent 1px);
+    background-size: auto, auto, auto, 44px 44px, 44px 44px;
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: rgba(99, 102, 241, 0.45); color: #fff; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0a0f1c; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; border: 2px solid #0a0f1c; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* ---------- Page entrance ---------- */
+@keyframes ig-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes ig-pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes ig-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes ig-shine { to { background-position: 200% center; } }
+main > * { animation: ig-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+
+/* ---------- Navbar ---------- */
+.ig-nav {
+    background: rgba(6, 9, 18, 0.72);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--ig-border);
+}
+.ig-logo-mark {
+    background: linear-gradient(135deg, var(--ig-accent), var(--ig-accent-2));
+    box-shadow: 0 0 22px rgba(99, 102, 241, 0.55);
+}
+.ig-navlink { position: relative; border-radius: 10px; transition: all .2s ease; }
+.ig-navlink:hover { background: rgba(148, 163, 184, 0.08); }
+.ig-navlink.active { color: #fff; background: rgba(99, 102, 241, 0.16); }
+.ig-live-dot {
+    width: 7px; height: 7px; border-radius: 999px; background: var(--ig-green);
+    box-shadow: 0 0 10px var(--ig-green); animation: ig-pulse 2s infinite;
+}
+
+/* ---------- Cards ---------- */
+.ig-card {
+    background: linear-gradient(180deg, rgba(20, 29, 52, 0.72), rgba(11, 17, 32, 0.72));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--ig-border);
+    border-radius: 20px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 45px -20px rgba(0, 0, 0, 0.75);
+    position: relative;
+}
+.ig-card::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(135deg, rgba(129,140,248,0.10), transparent 35%);
+    opacity: .9;
+}
+.ig-card-sm { border-radius: 16px; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.ig-card-sm:hover { transform: translateY(-4px); border-color: var(--ig-border-hi); box-shadow: 0 18px 40px -18px rgba(99,102,241,.45); }
+.ig-card > * { position: relative; }
+
+.ig-stat-accent { position: relative; overflow: hidden; }
+.ig-stat-accent::after {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--ig-accent), var(--ig-cyan));
+}
+
+.ig-icon-tile {
+    background: linear-gradient(135deg, rgba(99,102,241,.22), rgba(34,211,238,.10));
+    border: 1px solid rgba(129,140,248,.35);
+    box-shadow: 0 0 24px -6px rgba(99,102,241,.55);
+}
+
+/* ---------- Inputs ---------- */
+.ig-input {
+    width: 100%;
+    background: rgba(6, 10, 20, 0.7);
+    border: 1px solid var(--ig-border);
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    color: #f1f5f9;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.ig-input::placeholder { color: #64748b; }
+.ig-input:hover { border-color: rgba(148,163,184,.3); }
+.ig-input:focus {
+    outline: none; border-color: var(--ig-accent); background: rgba(8, 13, 26, 0.9);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+}
+select.ig-input { appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2.4rem; }
+.ig-label { display:block; font-size: .68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #cbd5e1; margin-bottom: .5rem; }
+
+/* ---------- Buttons ---------- */
+.ig-btn-primary, .ig-btn-emerald, .ig-btn-amber, .ig-btn-ghost, .ig-btn-danger {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    font-weight: 700; border-radius: 12px; transition: transform .15s ease, box-shadow .25s ease, filter .2s ease, background .2s ease;
+    cursor: pointer;
+}
+.ig-btn-primary {
+    color: #fff; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    box-shadow: 0 10px 25px -10px rgba(99, 102, 241, 0.9), 0 1px 0 rgba(255,255,255,.25) inset;
+}
+.ig-btn-primary:hover { transform: translateY(-2px); filter: brightness(1.12); box-shadow: 0 16px 30px -10px rgba(99,102,241,1); }
+.ig-btn-emerald {
+    color: #04130d; background: linear-gradient(135deg, #34d399, #10b981);
+    box-shadow: 0 10px 25px -10px rgba(16, 185, 129, 0.9), 0 1px 0 rgba(255,255,255,.35) inset;
+}
+.ig-btn-emerald:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.ig-btn-amber {
+    color: #fff; background: linear-gradient(135deg, #f59e0b, #ea580c);
+    box-shadow: 0 10px 25px -10px rgba(245, 158, 11, 0.9);
+}
+.ig-btn-amber:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.ig-btn-ghost { color: #e2e8f0; background: rgba(30, 41, 59, 0.55); border: 1px solid var(--ig-border); }
+.ig-btn-ghost:hover { background: rgba(51, 65, 85, 0.6); border-color: rgba(148,163,184,.35); }
+.ig-btn-danger { color: #fda4af; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); }
+.ig-btn-danger:hover { background: rgba(244, 63, 94, 0.22); }
+button:active, .ig-btn-primary:active, .ig-btn-emerald:active { transform: scale(.98); }
+button:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ---------- Tables ---------- */
+.ig-table thead { background: rgba(2, 6, 18, 0.55); }
+.ig-table thead th { font-weight: 700; letter-spacing: .08em; color: #94a3b8; border-bottom: 1px solid var(--ig-border); white-space: nowrap; }
+.ig-table tbody tr { transition: background .15s ease; }
+.ig-table tbody tr:hover { background: linear-gradient(90deg, rgba(99,102,241,.10), transparent); }
+.ig-table-wrap { border: 1px solid var(--ig-border); border-radius: 14px; overflow: hidden; }
+
+/* ---------- Badges ---------- */
+.badge-high-risk, .badge-low-risk { border-radius: 999px; font-weight: 700; letter-spacing: .04em; }
+.badge-high-risk { background: rgba(244,63,94,.15); color: #fb7185; border: 1px solid rgba(244,63,94,.4); }
+.badge-low-risk  { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.4); }
+
+/* ---------- Gradient text / hero ---------- */
+.ig-gradient-text {
+    background: linear-gradient(110deg, #e0e7ff 0%, #a5b4fc 30%, #22d3ee 60%, #e0e7ff 100%);
+    background-size: 200% auto; -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; animation: ig-shine 6s linear infinite;
+}
+.ig-hero-orb {
+    position: absolute; width: 380px; height: 380px; border-radius: 999px; filter: blur(80px);
+    background: radial-gradient(circle, rgba(99,102,241,.35), transparent 70%); pointer-events: none; z-index: -1;
+}
+.ig-float { animation: ig-float 5s ease-in-out infinite; }
+
+/* ---------- Risk gauge (result graphic) ---------- */
+.ig-gauge { --pct: 0; --col: #10b981; width: 132px; height: 132px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(var(--col) calc(var(--pct) * 1%), rgba(148,163,184,.14) 0);
+    display: grid; place-items: center; position: relative;
+    box-shadow: 0 0 30px -6px var(--col); }
+.ig-gauge::before { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: #090e1c; }
+.ig-gauge span { position: relative; font-size: 1.6rem; font-weight: 800; color: #fff; }
+.ig-bar { height: 8px; border-radius: 999px; background: rgba(148,163,184,.15); overflow: hidden; }
+.ig-bar > i { display: block; height: 100%; border-radius: inherit; }
+
+/* ---------- Flash / misc ---------- */
+.ig-flash { backdrop-filter: blur(8px); animation: ig-rise .4s ease both; }
+.ig-footer { border-top: 1px solid var(--ig-border); background: rgba(6, 9, 18, .7); backdrop-filter: blur(10px); }
+.ig-dropzone { border: 1.5px dashed rgba(129,140,248,.4); border-radius: 14px; background: rgba(99,102,241,.05); padding: 1rem; transition: all .2s; }
+.ig-dropzone:hover { background: rgba(99,102,241,.1); border-color: rgba(129,140,248,.7); }
+.ig-step { background: rgba(8, 13, 26, 0.6); border: 1px solid var(--ig-border); border-left: 3px solid var(--ig-accent); border-radius: 12px; padding: .8rem 1rem; }
+
+/* ---------- Legacy classes (kept, restyled) ---------- */
+.stat-card { border: 1px solid var(--ig-border); border-radius: 16px; transition: transform .25s ease, box-shadow .25s ease; }
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(99, 102, 241, 0.25); }
+.card-title-sub { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+.custom-table-container { border-radius: 16px; overflow: hidden; }
+.prediction-result-box { border-radius: 14px; padding: 20px; margin-top: 1.5rem; transition: all .3s ease-in-out; display: none; }
+.prediction-result-box.danger { background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.4); color: #fda4af; display: block !important; }
+.prediction-result-box.success { background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.4); color: #6ee7b7; display: block !important; }
+
+/* =====================================================================
+   PHASE 2 – DESIGN SYSTEM, FORMS, TABLES, FEEDBACK, A11Y, RESPONSIVE
+   ===================================================================== */
+
+/* ---------- Typography scale & contrast ---------- */
+main h1 { font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem); letter-spacing: -0.02em; line-height: 1.15; }
+main h2 { letter-spacing: -0.01em; }
+.text-slate-500 { color: #8b9bb4 !important; }           /* better contrast on dark */
+.text-slate-400 { color: #a3b1c6; }
+
+/* ---------- Risk colour scale (single source) ---------- */
+:root { --risk-low: #10b981; --risk-mid: #f59e0b; --risk-high: #f43f5e; }
+.risk-low  { color: var(--risk-low); }
+.risk-mid  { color: var(--risk-mid); }
+.risk-high { color: var(--risk-high); }
+
+/* ---------- Accessibility ---------- */
+:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; border-radius: 8px; }
+.ig-input:focus-visible { outline: none; }
+.ig-skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: #6366f1; color: #fff; padding: .6rem 1rem; border-radius: 10px; font-weight: 700; }
+.ig-skip:focus { left: 12px; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- Light theme (filter based, charts + canvas follow automatically) ---------- */
+html[data-theme="light"] { filter: invert(1) hue-rotate(180deg); background: #fff; }
+html[data-theme="light"] img, html[data-theme="light"] video, html[data-theme="light"] iframe,
+html[data-theme="light"] .ig-keep, html[data-theme="light"] .ig-gauge, html[data-theme="light"] .ig-logo-mark { filter: invert(1) hue-rotate(180deg); }
+.ig-iconbtn { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; color: #cbd5e1; background: rgba(30,41,59,.5); border: 1px solid var(--ig-border); transition: all .2s; cursor: pointer; }
+.ig-iconbtn:hover { color: #fff; border-color: var(--ig-border-hi); background: rgba(99,102,241,.18); }
+
+/* ---------- Top progress bar ---------- */
+#ig-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 9999; background: linear-gradient(90deg, #6366f1, #22d3ee); box-shadow: 0 0 12px #22d3ee; transition: width .35s ease, opacity .3s ease; }
+
+/* ---------- Toasts (flash messages) ---------- */
+#ig-toasts { position: fixed; top: 76px; right: 16px; z-index: 200; width: min(380px, calc(100vw - 32px)); margin: 0 !important; padding: 0 !important; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+#ig-toasts .ig-flash { pointer-events: auto; margin: 0 !important; display: flex; gap: 12px; align-items: flex-start; box-shadow: 0 18px 40px -12px rgba(0,0,0,.7); animation: ig-toast-in .45s cubic-bezier(.2,.9,.3,1.2) both; position: relative; overflow: hidden; }
+#ig-toasts .ig-flash.out { animation: ig-toast-out .35s ease forwards; }
+#ig-toasts .ig-flash button { margin-left: auto; opacity: .6; font-size: 16px; line-height: 1; }
+#ig-toasts .ig-flash button:hover { opacity: 1; }
+#ig-toasts .ig-flash::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: currentColor; opacity: .5; transform-origin: left; animation: ig-toast-timer 5s linear forwards; }
+@keyframes ig-toast-in { from { opacity: 0; transform: translateX(40px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes ig-toast-out { to { opacity: 0; transform: translateX(40px); } }
+@keyframes ig-toast-timer { to { transform: scaleX(0); } }
+
+/* ---------- Mobile navbar ---------- */
+.ig-burger { display: none; }
+@media (max-width: 767px) {
+    .ig-burger { display: inline-flex; }
+    .ig-links { display: none !important; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; align-items: stretch !important; gap: 6px !important; padding: 14px 16px;
+        background: rgba(6, 9, 18, .97); border-bottom: 1px solid var(--ig-border); box-shadow: 0 24px 40px -20px #000; }
+    .ig-links.open { display: flex !important; animation: ig-rise .25s ease both; }
+    .ig-links a { text-align: left; padding: .8rem 1rem !important; }
+}
+
+/* ---------- Form feedback ---------- */
+.ig-input.ig-valid   { border-color: rgba(16,185,129,.7); box-shadow: 0 0 0 3px rgba(16,185,129,.10); }
+.ig-input.ig-invalid { border-color: rgba(244,63,94,.8);  box-shadow: 0 0 0 3px rgba(244,63,94,.12); }
+.ig-help { font-size: .7rem; margin-top: .35rem; color: #94a3b8; min-height: 1em; }
+.ig-help.err { color: #fb7185; }
+.ig-shake { animation: ig-shake .4s ease; }
+@keyframes ig-shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+.ig-pop { animation: ig-pop .5s cubic-bezier(.2,1.6,.4,1) both; }
+@keyframes ig-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ig-eye { position: absolute; right: 10px; display: inline-flex; align-items: center; justify-content: center; width: 34px; color: #94a3b8; cursor: pointer; }
+.ig-eye:hover { color: #fff; }
+.ig-strength { display: flex; gap: 4px; margin-top: .5rem; }
+.ig-strength i { flex: 1; height: 4px; border-radius: 4px; background: rgba(148,163,184,.2); transition: background .25s; }
+.ig-strength-label { font-size: .68rem; margin-top: .25rem; color: #94a3b8; }
+
+/* tooltips on labels */
+label[data-tip] { position: relative; cursor: help; }
+label[data-tip]::after { content: "?"; display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; margin-left: 6px; border-radius: 50%; font-size: 10px; background: rgba(129,140,248,.25); color: #c7d2fe; vertical-align: middle; }
+label[data-tip]::before { content: attr(data-tip); position: absolute; left: 0; bottom: calc(100% + 8px); width: max-content; max-width: 260px; text-transform: none; letter-spacing: 0; font-weight: 500; font-size: .72rem; line-height: 1.4; padding: .55rem .75rem; border-radius: 10px;
+    background: #0b1224; color: #e2e8f0; border: 1px solid var(--ig-border-hi); box-shadow: 0 12px 30px -10px #000; opacity: 0; transform: translateY(4px); pointer-events: none; transition: all .18s; z-index: 30; }
+label[data-tip]:hover::before { opacity: 1; transform: none; }
+
+/* ---------- Stepper (form wizard + case status) ---------- */
+.ig-steps { display: flex; align-items: center; margin-bottom: 1.5rem; }
+.ig-steps .s { display: flex; align-items: center; gap: .6rem; font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #64748b; }
+.ig-steps .s b { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: .78rem; background: rgba(30,41,59,.9); border: 1px solid var(--ig-border); transition: all .3s; }
+.ig-steps .s.active { color: #fff; }
+.ig-steps .s.active b { background: linear-gradient(135deg,#6366f1,#8b5cf6); border-color: transparent; box-shadow: 0 0 18px rgba(99,102,241,.7); }
+.ig-steps .s.done { color: #6ee7b7; }
+.ig-steps .s.done b { background: #10b981; border-color: transparent; color: #04130d; }
+.ig-steps .line { flex: 1; height: 2px; margin: 0 .75rem; background: rgba(148,163,184,.18); position: relative; overflow: hidden; border-radius: 2px; }
+.ig-steps .line::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg,#6366f1,#22d3ee); transform: scaleX(0); transform-origin: left; transition: transform .45s ease; }
+.ig-steps .line.fill::after { transform: scaleX(1); }
+.ig-step-pane { animation: ig-rise .35s ease both; }
+.ig-wizard-nav { display: flex; gap: .75rem; justify-content: space-between; margin-top: 1.25rem; }
+@media (max-width: 520px) { .ig-steps .s span { display: none; } }
+
+/* ---------- Upload preview ---------- */
+.ig-dropzone.drag { background: rgba(99,102,241,.16); border-color: #22d3ee; }
+.ig-preview { display: flex; align-items: center; gap: .9rem; margin-top: .8rem; padding: .6rem; border-radius: 12px; background: rgba(6,10,20,.6); border: 1px solid var(--ig-border); animation: ig-pop .35s both; }
+.ig-preview img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; }
+.ig-preview .ph { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 10px; background: rgba(99,102,241,.2); font-size: 1.4rem; }
+
+/* ---------- Buttons: loading ---------- */
+.ig-loading { position: relative; pointer-events: none; color: transparent !important; }
+.ig-loading::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; animation: ig-spin .7s linear infinite; }
+@keyframes ig-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Skeleton loaders ---------- */
+.ig-skel-wrap { position: relative; }
+.ig-skel { position: absolute; inset: 0; z-index: 5; border-radius: 12px; overflow: hidden; background: #0b1224; transition: opacity .4s; }
+.ig-skel::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 20%, rgba(129,140,248,.14) 50%, transparent 80%); transform: translateX(-100%); animation: ig-skel 1.2s infinite; }
+@keyframes ig-skel { to { transform: translateX(100%); } }
+.ig-skel.gone { opacity: 0; pointer-events: none; }
+
+/* ---------- Table toolbar, sorting, pagination, chips ---------- */
+.ig-table-wrap { max-height: 72vh; overflow: auto; }
+.ig-table thead th { position: sticky; top: 0; z-index: 2; background: #0a1020; }
+.ig-table thead th.sortable { cursor: pointer; user-select: none; }
+.ig-table thead th.sortable:hover { color: #fff; }
+.ig-table thead th .ar { opacity: .35; margin-left: .35rem; font-size: .65rem; }
+.ig-table thead th.asc .ar, .ig-table thead th.desc .ar { opacity: 1; color: #22d3ee; }
+.ig-page-hide, .ig-chip-hide { display: none !important; }
+.ig-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; margin-top: .9rem; font-size: .75rem; color: #94a3b8; }
+.ig-toolbar select { background: rgba(6,10,20,.8); border: 1px solid var(--ig-border); color: #e2e8f0; border-radius: 8px; padding: .3rem .5rem; }
+.ig-pager { display: inline-flex; gap: .35rem; align-items: center; }
+.ig-pager button { min-width: 32px; height: 32px; padding: 0 .55rem; border-radius: 8px; border: 1px solid var(--ig-border); background: rgba(30,41,59,.5); color: #cbd5e1; font-weight: 600; }
+.ig-pager button:hover:not(:disabled) { border-color: var(--ig-border-hi); color: #fff; }
+.ig-pager button.on { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; border-color: transparent; }
+.ig-pager button:disabled { opacity: .35; cursor: not-allowed; }
+.ig-chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.ig-chip { padding: .4rem .9rem; border-radius: 999px; font-size: .72rem; font-weight: 700; border: 1px solid var(--ig-border); color: #cbd5e1; background: rgba(30,41,59,.45); transition: all .2s; }
+.ig-chip:hover { border-color: var(--ig-border-hi); }
+.ig-chip.on { color: #fff; background: rgba(99,102,241,.3); border-color: rgba(129,140,248,.7); }
+
+/* tables become cards on phones */
+@media (max-width: 640px) {
+    .ig-table-wrap { max-height: none; overflow: visible; border: 0; }
+    .ig-table, .ig-table tbody, .ig-table tr, .ig-table td { display: block; width: 100%; }
+    .ig-table thead { display: none; }
+    .ig-table tbody tr { margin-bottom: .9rem; border: 1px solid var(--ig-border); border-radius: 14px; padding: .35rem .2rem; background: rgba(15,23,42,.6); }
+    .ig-table tbody td { display: flex !important; justify-content: space-between; gap: 1rem; padding: .5rem .85rem !important; text-align: right; }
+    .ig-table tbody td::before { content: attr(data-label); color: #8b9bb4; font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; font-weight: 700; text-align: left; }
+}
+
+/* ---------- Empty states ---------- */
+.ig-empty { text-align: center; padding: 2.5rem 1rem; }
+.ig-empty-icon { width: 76px; height: 76px; margin: 0 auto 1rem; border-radius: 22px; display: grid; place-items: center; font-size: 1.9rem; color: #a5b4fc;
+    background: linear-gradient(135deg, rgba(99,102,241,.2), rgba(34,211,238,.08)); border: 1px dashed rgba(129,140,248,.45); animation: ig-float 4s ease-in-out infinite; }
+.ig-empty p { color: #94a3b8; font-size: .85rem; max-width: 420px; margin: 0 auto 1.1rem; }
+
+/* ---------- Dashboard extras ---------- */
+.ig-spark { position: absolute; right: 12px; bottom: 10px; width: 84px; height: 30px; opacity: .85; }
+.ig-heat { display: flex; gap: 5px; flex-wrap: wrap; }
+.ig-heat i { width: 26px; height: 26px; border-radius: 7px; transition: transform .15s; cursor: default; }
+.ig-heat i:hover { transform: scale(1.25); }
+.ig-seg { display: inline-flex; padding: 3px; border-radius: 10px; background: rgba(6,10,20,.7); border: 1px solid var(--ig-border); }
+.ig-seg button { padding: .3rem .8rem; font-size: .7rem; font-weight: 700; color: #94a3b8; border-radius: 8px; }
+.ig-seg button.on { background: rgba(99,102,241,.35); color: #fff; }
+
+/* ---------- Case status stepper (investigation) ---------- */
+.ig-track { display: flex; align-items: flex-start; }
+.ig-track .t { flex: 1; text-align: center; position: relative; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #64748b; }
+.ig-track .t b { width: 34px; height: 34px; margin: 0 auto .5rem; border-radius: 50%; display: grid; place-items: center; background: rgba(30,41,59,.9); border: 1px solid var(--ig-border); position: relative; z-index: 1; }
+.ig-track .t::before { content: ""; position: absolute; top: 16px; left: -50%; width: 100%; height: 2px; background: rgba(148,163,184,.2); }
+.ig-track .t:first-child::before { display: none; }
+.ig-track .t.done, .ig-track .t.now { color: #e2e8f0; }
+.ig-track .t.done b { background: #10b981; border-color: transparent; color: #04130d; }
+.ig-track .t.done::before, .ig-track .t.now::before { background: linear-gradient(90deg,#10b981,#6366f1); }
+.ig-track .t.now b { background: linear-gradient(135deg,#6366f1,#8b5cf6); border-color: transparent; color: #fff; box-shadow: 0 0 20px rgba(99,102,241,.8); animation: ig-pulse 2s infinite; }
+.ig-track .t.bad b { background: #f43f5e; border-color: transparent; color: #fff; box-shadow: 0 0 20px rgba(244,63,94,.7); animation: none; }
+.ig-track .t.bad { color: #fda4af; }
+
+/* ---------- Confirm modal ---------- */
+#ig-modal { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; padding: 1rem; background: rgba(2,6,16,.7); backdrop-filter: blur(6px); }
+#ig-modal.show { display: flex; animation: ig-rise .2s ease both; }
+#ig-modal .box { width: min(420px, 100%); border-radius: 20px; padding: 1.6rem; background: linear-gradient(180deg,#141d34,#0b1122); border: 1px solid var(--ig-border-hi); box-shadow: 0 30px 60px -20px #000; text-align: center; animation: ig-pop .35s both; }
+#ig-modal .ico { width: 56px; height: 56px; margin: 0 auto 1rem; border-radius: 18px; display: grid; place-items: center; font-size: 1.5rem; background: rgba(244,63,94,.15); border: 1px solid rgba(244,63,94,.4); color: #fb7185; }
+
+/* ---------- Auth split screen ---------- */
+.ig-auth-art { position: relative; padding: 2.5rem; background:
+    radial-gradient(400px 300px at 20% 10%, rgba(99,102,241,.45), transparent 70%),
+    radial-gradient(400px 300px at 90% 100%, rgba(34,211,238,.25), transparent 70%), #0a1124;
+    border-right: 1px solid var(--ig-border); display: none; flex-direction: column; justify-content: center; gap: 1.5rem; overflow: hidden; }
+@media (min-width: 1024px) { .ig-auth-art { display: flex; } }
+.ig-auth-art li { display: flex; gap: .7rem; align-items: center; font-size: .85rem; color: #cbd5e1; }
+.ig-auth-art li i { color: #34d399; }
+
+/* ---------- Network graph tools ---------- */
+.ig-gtools { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; flex-direction: column; gap: 6px; }
+.ig-legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .72rem; color: #94a3b8; margin-top: .75rem; }
+.ig-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: .4rem; background: var(--c); vertical-align: -1px; }
+.ig-graph-full { position: fixed !important; inset: 0; z-index: 400; height: 100vh !important; border-radius: 0 !important; }
+
+/* ---------- Error pages ---------- */
+.ig-errcode { font-size: clamp(5rem, 18vw, 9rem); font-weight: 900; line-height: 1; }
+
+/* ---------- Print (investigation report) ---------- */
+@media print {
+    html[data-theme] { filter: none !important; }
+    body { background: #fff !important; color: #000 !important; }
+    .ig-nav, .ig-footer, .no-print, #ig-toasts, #ig-progress { display: none !important; }
+    .ig-card { background: #fff !important; border: 1px solid #ccc !important; box-shadow: none !important; backdrop-filter: none !important; }
+    .ig-card::before { display: none; }
+    * { color: #111 !important; -webkit-text-fill-color: #111 !important; }
+}
