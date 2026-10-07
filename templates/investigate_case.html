@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10 space-y-6">
+
+    <!-- Top Header -->
+    <div class="flex flex-wrap justify-between items-center gap-4">
+        <div>
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 mb-3 rounded-full bg-indigo-500/10 border border-indigo-400/25 text-cyan-300 text-xs font-semibold">
+                <i class="fas fa-shield-halved"></i> InsureGuard Investigation Hub
+            </span>
+            <h2 class="text-3xl font-extrabold text-white">Claim Investigation <span class="ig-gradient-text">#{{ claim.id }}</span></h2>
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="window.print()" class="ig-btn-ghost px-4 py-2 text-xs no-print"><i class="fa-solid fa-print"></i> Print Report</button>
+            <span class="text-slate-400 text-xs">Status:</span>
+            <span class="px-4 py-2 rounded-xl text-sm font-bold border {% if claim.status == 'APPROVED' %}bg-emerald-500/15 text-emerald-300 border-emerald-500/40{% elif claim.status == 'REJECTED' %}bg-red-500/15 text-red-300 border-red-500/40{% elif claim.status == 'UNDER_INVESTIGATION' %}bg-indigo-500/15 text-indigo-300 border-indigo-500/40{% else %}bg-amber-500/15 text-amber-300 border-amber-500/40{% endif %}">
+                {{ claim.status | replace('_', ' ') }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Case progress tracker -->
+    {% set _order = ['PENDING_REVIEW', 'UNDER_INVESTIGATION', 'DECISION'] %}
+    {% set _idx = 0 if claim.status == 'PENDING_REVIEW' else (1 if claim.status == 'UNDER_INVESTIGATION' else 2) %}
+    <div class="ig-card p-6">
+        <div class="ig-track">
+            <div class="t {% if _idx > 0 %}done{% else %}now{% endif %}"><b>{% if _idx > 0 %}&#10003;{% else %}1{% endif %}</b>Pending Review</div>
+            <div class="t {% if _idx > 1 %}done{% elif _idx == 1 %}now{% endif %}"><b>{% if _idx > 1 %}&#10003;{% else %}2{% endif %}</b>Under Investigation</div>
+            <div class="t {% if claim.status == 'APPROVED' %}now{% elif claim.status == 'REJECTED' %}now bad{% endif %}"><b>{% if claim.status == 'REJECTED' %}&#10005;{% elif claim.status == 'APPROVED' %}&#10003;{% else %}3{% endif %}</b>{% if claim.status == 'REJECTED' %}Rejected{% elif claim.status == 'APPROVED' %}Approved{% else %}Decision{% endif %}</div>
+        </div>
+    </div>
+
+    <!-- Manual 1-on-1 Field Protocol Hero Banner (Point-Wise Layout) -->
+    <div class="ig-card p-6">
+        <div class="flex items-center mb-5">
+            <div class="ig-icon-tile w-14 h-14 rounded-2xl flex items-center justify-center text-cyan-300 mr-4">
+                <i class="fas fa-user-shield text-2xl"></i>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-white">1-on-1 Manual Field Inspection Guidelines</h4>
+                <small class="text-cyan-300">Standard Operating Protocol & Verification Workflow</small>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Process Breakdown Points -->
+            <div class="lg:col-span-7 space-y-3">
+                <h6 class="font-bold text-white mb-2 text-xs uppercase tracking-widest">
+                    <i class="fas fa-list-ol text-indigo-400 mr-2"></i>Investigation Procedure
+                </h6>
+
+                <div class="ig-step">
+                    <span class="font-bold text-slate-100 block mb-1 text-sm">1. Direct Contact & Scheduling</span>
+                    <small class="text-slate-400 block">An assigned officer contacts the claimant within <strong class="text-slate-200">24 to 48 hours</strong> to fix an in-person audit time.</small>
+                </div>
+
+                <div class="ig-step">
+                    <span class="font-bold text-slate-100 block mb-1 text-sm">2. On-Site Physical Inspection</span>
+                    <small class="text-slate-400 block">Field officer inspects physical damage geometry, validates vehicle condition, and cross-checks claim data on-site.</small>
+                </div>
+
+                <div class="ig-step" style="border-left-color:#22d3ee;">
+                    <span class="font-bold text-slate-100 block mb-1 text-sm">3. Credential Verification Notice</span>
+                    <small class="text-slate-400 block">Claimants must verify the officer's official InsureGuard photo ID card prior to starting inspection.</small>
+                </div>
+            </div>
+
+            <!-- Mandatory Document Checklist -->
+            <div class="lg:col-span-5">
+                <div class="p-5 rounded-2xl bg-slate-950/60 border border-slate-700/40 h-full">
+                    <h6 class="font-bold text-cyan-300 mb-4 text-xs uppercase tracking-widest">
+                        <i class="fas fa-clipboard-check mr-2"></i>Required Verification Documents
+                    </h6>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-400 mr-2"></i><span class="text-slate-200">Original Government Photo ID</span></li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-400 mr-2"></i><span class="text-slate-200">Vehicle Registration / RC Book</span></li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-400 mr-2"></i><span class="text-slate-200">Original Spot Photographs & Videos</span></li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-400 mr-2"></i><span class="text-slate-200">Repair Workshop Estimate Bills</span></li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-400 mr-2"></i><span class="text-slate-200">Police FIR / Authority Report (if filed)</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stat Widgets -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="ig-card ig-card-sm ig-stat-accent p-4">
+            <span class="text-slate-400 text-xs block mb-1 uppercase tracking-wider font-semibold">Claim Amount</span>
+            <h4 class="text-2xl font-extrabold text-white">${{ "%.2f"|format(claim.claim_amount) }}</h4>
+        </div>
+        <div class="ig-card ig-card-sm ig-stat-accent p-4">
+            <span class="text-slate-400 text-xs block mb-1 uppercase tracking-wider font-semibold">Risk Score</span>
+            <h4 class="text-2xl font-extrabold {% if claim.risk_score > 0.6 %}text-red-400{% elif claim.risk_score > 0.3 %}text-amber-400{% else %}text-emerald-400{% endif %}">
+                {{ "%.2f"|format(claim.risk_score) if claim.risk_score else '0.00' }}
+            </h4>
+        </div>
+        <div class="ig-card ig-card-sm ig-stat-accent p-4">
+            <span class="text-slate-400 text-xs block mb-2 uppercase tracking-wider font-semibold">EXIF Flag</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold border {% if claim.exif_flagged %}bg-red-500/15 text-red-400 border-red-500/40{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/40{% endif %}">
+                {{ 'Flagged' if claim.exif_flagged else 'Verified Clean' }}
+            </span>
+        </div>
+        <div class="ig-card ig-card-sm ig-stat-accent p-4">
+            <span class="text-slate-400 text-xs block mb-2 uppercase tracking-wider font-semibold">Image Duplicate</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold border {% if claim.duplicate_image_detected %}bg-red-500/15 text-red-400 border-red-500/40{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/40{% endif %}">
+                {{ 'Duplicate Found' if claim.duplicate_image_detected else 'Unique Photo' }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left: Claim Profile (Point-Wise Key-Value List) -->
+        <div class="ig-card p-6">
+            <h5 class="font-bold text-white mb-4 border-b border-slate-700/60 pb-3">
+                <i class="fas fa-file-invoice text-cyan-300 mr-2"></i>Claimant Profile & Record Details
+            </h5>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70">
+                    <span class="text-slate-400 text-xs"><i class="fas fa-user mr-2 text-indigo-400"></i>Claimant Name</span>
+                    <span class="font-semibold text-slate-100 text-xs">{{ claim.username }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70">
+                    <span class="text-slate-400 text-xs"><i class="fas fa-hashtag mr-2 text-indigo-400"></i>User ID</span>
+                    <span class="font-semibold text-slate-100 text-xs">#{{ claim.user_id }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70">
+                    <span class="text-slate-400 text-xs"><i class="fas fa-phone mr-2 text-indigo-400"></i>Contact Phone</span>
+                    <span class="font-semibold text-slate-100 text-xs">{{ claim.contact_phone or 'Not Provided' }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70">
+                    <span class="text-slate-400 text-xs"><i class="fas fa-shield mr-2 text-indigo-400"></i>Policy Type</span>
+                    <span class="font-semibold text-slate-100 text-xs">{{ claim.policy_type }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70">
+                    <span class="text-slate-400 text-xs"><i class="fas fa-calendar-alt mr-2 text-indigo-400"></i>Incident Date</span>
+                    <span class="font-semibold text-slate-100 text-xs">{{ claim.incident_date or 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between items-center p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70">
+                    <span class="text-slate-400 text-xs"><i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>Location</span>
+                    <span class="font-semibold text-slate-100 text-xs">{{ claim.incident_location or 'N/A' }}</span>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/25">
+                <span class="text-amber-300 text-xs block mb-1 font-bold"><i class="fas fa-exclamation-triangle mr-1"></i>Risk Factors Flagged:</span>
+                <p class="text-xs text-slate-400">
+                    {{ claim.risk_factors or 'No automated anomaly flags raised for this record.' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Right: Audit Form -->
+        <div class="ig-card p-6">
+            <h5 class="font-bold text-white mb-4 border-b border-slate-700/60 pb-3">
+                <i class="fas fa-clipboard-check text-cyan-300 mr-2"></i>Investigator Decision Log
+            </h5>
+
+            <form method="POST" action="">
+                <div class="mb-4">
+                    <label for="investigator_notes" class="ig-label">
+                        Field Inspection & Verification Notes
+                    </label>
+                    <textarea class="ig-input" id="investigator_notes" name="investigator_notes" rows="6" placeholder="Log site observations, claimant interviews, physical damage validation, and approval/rejection notes...">{{ claim.investigator_notes or '' }}</textarea>
+                </div>
+
+                <div class="mb-5">
+                    <label for="status" class="ig-label">
+                        Update Case Status
+                    </label>
+                    <select class="ig-input" id="status" name="status">
+                        <option value="PENDING_REVIEW" {% if claim.status == 'PENDING_REVIEW' %}selected{% endif %}>Pending Review</option>
+                        <option value="UNDER_INVESTIGATION" {% if claim.status == 'UNDER_INVESTIGATION' %}selected{% endif %}>Under Investigation</option>
+                        <option value="APPROVED" {% if claim.status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                        <option value="REJECTED" {% if claim.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="ig-btn-primary w-full py-3 text-sm">
+                    <i class="fas fa-save"></i>Save Audit Entry
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

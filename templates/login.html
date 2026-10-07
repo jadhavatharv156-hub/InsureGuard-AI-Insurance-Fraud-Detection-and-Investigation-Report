@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto my-10 ig-card grid lg:grid-cols-2 overflow-hidden">
+        <div class="ig-auth-art">
+            <svg width="92" height="92" viewBox="0 0 64 64" fill="none" class="ig-float"><defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><circle cx="32" cy="32" r="30" stroke="rgba(129,140,248,.25)" stroke-dasharray="3 4"/><path d="M32 8 13 15v14c0 12 8 21 19 24 11-3 19-12 19-24V15z" fill="url(#ag)" opacity=".95"/><path d="m24 32 6 6 11-12" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div><h3 class="text-2xl font-extrabold text-white mb-2">AI-powered claim protection</h3><p class="text-sm text-slate-400">Sign in to review assessments, track risk and manage investigations.</p></div>
+            <ul class="space-y-3">
+                <li><i class="fa-solid fa-circle-check"></i> ML-driven fraud risk scoring</li>
+                <li><i class="fa-solid fa-circle-check"></i> Image forensics &amp; duplicate detection</li>
+                <li><i class="fa-solid fa-circle-check"></i> Transparent, explainable decisions</li>
+            </ul>
+        </div>
+    <div class="p-8 w-full max-w-md mx-auto">
+    
+    <!-- HEADER & TITLE -->
+    <div class="text-center mb-8">
+        <div class="w-12 h-12 mx-auto mb-4 rounded-xl ig-icon-tile {% if is_admin %}text-indigo-300{% else %}text-cyan-300{% endif %} flex items-center justify-center font-bold text-xl">
+            {% if is_admin %}<i class="fa-solid fa-gear"></i>{% else %}<i class="fa-solid fa-lock"></i>{% endif %}
+        </div>
+        
+        <h2 class="text-2xl font-bold text-white">
+            {% if is_admin %}Admin Portal Login{% else %}Welcome Back{% endif %}
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+            {% if is_admin %}Enter administrator credentials to access management controls.{% else %}Sign in to your account to continue.{% endif %}
+        </p>
+    </div>
+
+    <!-- DYNAMIC FORM ACTION -->
+    <form method="POST" action="{% if is_admin %}{{ url_for('admin_login') }}{% else %}{{ url_for('login') }}{% endif %}" class="space-y-5">
+        
+        <div>
+            <label class="ig-label">Username</label>
+            <input type="text" name="username" required 
+                   placeholder="Enter your username"
+                   class="ig-input">
+        </div>
+
+        <div>
+            <label class="ig-label">Password</label>
+            <input type="password" name="password" required 
+                   placeholder="••••••••"
+                   class="ig-input">
+        </div>
+
+        <button type="submit" 
+                class="w-full py-3 px-4 ig-btn-primary text-sm">
+            {% if is_admin %}Authenticate Admin{% else %}Sign In{% endif %}
+        </button>
+    </form>
+
+    <!-- FOOTER LINKS -->
+    <div class="mt-6 text-center border-t border-slate-800 pt-4 flex items-center justify-between text-xs">
+        {% if is_admin %}
+            <a href="{{ url_for('login') }}" class="text-slate-400 hover:text-white transition">← Regular User Login</a>
+        {% else %}
+            <a href="{{ url_for('register') }}" class="text-indigo-400 hover:text-indigo-300 font-medium">Create an Account</a>
+            <a href="{{ url_for('admin_login') }}" class="text-slate-500 hover:text-slate-300 transition">Admin Access →</a>
+        {% endif %}
+    </div>
+
+</div>
+</div>
+{% endblock %}

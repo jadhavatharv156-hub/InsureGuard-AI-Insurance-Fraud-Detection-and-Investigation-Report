@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4 space-y-8">
+
+    <!-- USER PROFILE HEADER CARD -->
+    <div class="ig-card p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 font-bold text-2xl">
+                {{ user.username[0]|upper }}
+            </div>
+            <div>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl font-bold text-white">{{ user.username }}</h1>
+                    <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        {{ user.role }}
+                    </span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Account Registered: {{ user.created_at.strftime('%B %d, %Y') }}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 w-full md:w-auto flex-wrap">
+            {% if session.get('role') == 'ADMIN' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="flex-1 md:flex-initial text-center px-4 py-2.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-semibold rounded-xl border border-indigo-500/30 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Admin Portal
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('profile') }}" class="flex-1 md:flex-initial text-center px-4 py-2.5 text-xs font-semibold ig-btn-ghost">
+                Edit Account
+            </a>
+            <a href="{{ url_for('predict') }}" class="flex-1 md:flex-initial text-center px-5 py-2.5 text-xs font-bold flex items-center justify-center gap-2 ig-btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                New Risk Assessment
+            </a>
+            <a href="{{ url_for('logout') }}" class="flex-1 md:flex-initial text-center px-4 py-2.5 text-xs font-semibold ig-btn-danger">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- METRICS OVERVIEW ROW -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="ig-card ig-card-sm ig-stat-accent p-5">
+            <p class="text-xs uppercase font-semibold text-slate-400">Total Assessments</p>
+            <p class="text-3xl font-extrabold text-white mt-2">{{ total_claims }}</p>
+        </div>
+        <div class="ig-card ig-card-sm ig-stat-accent p-5">
+            <p class="text-xs uppercase font-semibold text-slate-400">Legitimate Claims</p>
+            <p class="text-3xl font-extrabold text-emerald-400 mt-2">{{ legitimate_claims }}</p>
+        </div>
+        <div class="ig-card ig-card-sm ig-stat-accent p-5">
+            <p class="text-xs uppercase font-semibold text-slate-400">Flagged Risk Cases</p>
+            <p class="text-3xl font-extrabold text-red-400 mt-2">{{ flagged_claims }}</p>
+        </div>
+        <div class="ig-card ig-card-sm ig-stat-accent p-5">
+            <p class="text-xs uppercase font-semibold text-slate-400">Average Risk Exposure</p>
+            <p class="text-3xl font-extrabold text-indigo-400 mt-2">{{ "%.1f"|format(avg_risk) }}%</p>
+        </div>
+    </div>
+
+    <!-- GRAPH SECTION -->
+    <div class="ig-card p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3 mb-6">
+            <div>
+                <h2 class="text-xl font-bold text-white mb-1">Risk Progression Analytics</h2>
+                <p class="text-xs text-slate-400">Historical prediction trends generated across your submitted claims.</p>
+            </div>
+            <div class="ig-seg no-print" id="rangeSwitch">
+                <button type="button" data-n="5">Last 5</button>
+                <button type="button" data-n="10">Last 10</button>
+                <button type="button" data-n="0" class="on">All</button>
+            </div>
+        </div>
+        
+        <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="userHistoryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- ANALYTICS WIDGETS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="ig-card p-6">
+            <h3 class="text-sm font-bold text-white mb-1">Legitimate vs Flagged</h3>
+            <p class="text-xs text-slate-400 mb-4">Outcome split of all assessments.</p>
+            <div style="position:relative;height:210px"><canvas id="splitChart" data-legit="{{ legitimate_claims }}" data-flagged="{{ flagged_claims }}"></canvas></div>
+        </div>
+        <div class="ig-card p-6 lg:col-span-2">
+            <h3 class="text-sm font-bold text-white mb-1">Average Risk by Policy Type</h3>
+            <p class="text-xs text-slate-400 mb-4">Which policy types carry the most exposure.</p>
+            <div style="position:relative;height:210px"><canvas id="policyChart"></canvas></div>
+        </div>
+        <div class="ig-card p-6 lg:col-span-3">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-white">Risk Heat Timeline</h3>
+                <div class="flex items-center gap-3 text-[11px] text-slate-400"><span><i class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#10b981"></i> Low</span><span><i class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#f59e0b"></i> Medium</span><span><i class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#f43f5e"></i> High</span></div>
+            </div>
+            <div class="ig-heat" id="heatStrip"></div>
+        </div>
+    </div>
+
+    <!-- CLAIM HISTORY TABLE -->
+    <div class="ig-card p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-white">Claim Assessment History</h2>
+            <a href="{{ url_for('predict') }}" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">+ Run New Prediction</a>
+        </div>
+
+        {% if history %}
+        <div class="overflow-x-auto ig-table-wrap">
+            <table class="ig-table w-full text-left text-sm text-slate-300">
+                <thead class="bg-slate-800 text-xs uppercase tracking-wider text-slate-400">
+                    <tr>
+                        <th class="px-4 py-3">Date</th>
+                        <th class="px-4 py-3">Policy</th>
+                        <th class="px-4 py-3">Severity</th>
+                        <th class="px-4 py-3">Amount</th>
+                        <th class="px-4 py-3">Risk Score</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Report</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                    {% for h in history %}
+                    <tr class="hover:bg-slate-800/50 transition">
+                        <td class="px-4 py-3 text-xs text-slate-400">{{ h.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="px-4 py-3 font-medium text-white">{{ h.policy_type }}</td>
+                        <td class="px-4 py-3">{{ h.incident_severity }}</td>
+                        <td class="px-4 py-3">${{ "%.2f"|format(h.claim_amount) }}</td>
+                        <td class="px-4 py-3 font-bold {% if h.prediction == 1 %}text-red-400{% else %}text-emerald-400{% endif %}">
+                            {{ "%.2f"|format(h.risk_score * 100) }}%
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded {% if h.prediction == 1 %}bg-red-500/20 text-red-400 border border-red-500/30{% else %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% endif %}">
+                                {{ 'FLAGGED' if h.prediction == 1 else 'LEGITIMATE' }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <a href="{{ url_for('download_report', claim_id=h.id) }}" class="text-indigo-400 hover:text-indigo-300 text-xs font-semibold">
+                                PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="ig-empty">
+            <div class="ig-empty-icon"><i class="fa-solid fa-inbox"></i></div>
+            <p>No claim assessments recorded yet. Click "New Risk Assessment" above to run your first evaluation.</p>
+            <a href="{{ url_for('predict') }}" class="ig-btn-primary px-5 py-2.5 text-xs">+ Run your first assessment</a>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- DATA EMBEDDING VIA HTML DATA ATTRIBUTES -->
+<div id="chart-data-store" 
+     data-labels='{{ chart_labels | tojson | safe }}' 
+     data-scores='{{ chart_scores | tojson | safe }}' 
+     class="hidden"></div>
+
+<!-- CHART.JS LIBRARY & SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function renderRiskChart() {
+        if (typeof Chart === 'undefined') {
+            setTimeout(renderRiskChart, 100);
+            return;
+        }
+
+        const dataElement = document.getElementById('chart-data-store');
+        if (!dataElement) return;
+
+        let rawLabels = [], rawScores = [];
+        try {
+            rawLabels = JSON.parse(dataElement.getAttribute('data-labels') || "[]");
+            rawScores = JSON.parse(dataElement.getAttribute('data-scores') || "[]");
+        } catch (e) {
+            console.error("Failed parsing chart dataset", e);
+        }
+
+        const labels = rawLabels.length > 0 ? rawLabels : ['Initial Baseline'];
+        const scores = rawScores.length > 0 ? rawScores : [0];
+
+        const canvas = document.getElementById('userHistoryChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (window.myRiskChartInstance) window.myRiskChartInstance.destroy();
+
+        const grad = ctx.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, 'rgba(99, 102, 241, 0.45)');
+        grad.addColorStop(1, 'rgba(34, 211, 238, 0.02)');
+
+        window.myRiskChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Calculated Risk (%)',
+                    data: scores,
+                    borderColor: '#818cf8',
+                    backgroundColor: grad,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#0b1020',
+                    pointBorderColor: '#22d3ee',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(148, 163, 184, 0.08)' },
+                        ticks: { 
+                            color: '#94a3b8', 
+                            callback: function(value) { return value + '%'; } 
+                        }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                        ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f8fafc', font: { weight: 'bold' } } },
+                    tooltip: {
+                        backgroundColor: 'rgba(8, 13, 26, 0.95)',
+                        borderColor: 'rgba(129, 140, 248, 0.5)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 10,
+                        callbacks: {
+                            label: function(context) {
+                                return ' Risk Level: ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderRiskChart);
+    } else {
+        renderRiskChart();
+    }
+</script>
+
+<!-- ANALYTICS WIDGET SCRIPT (presentation only) -->
+<script>
+(function () {
+    function build() {
+        if (typeof Chart === 'undefined' || !window.myRiskChartInstance) { setTimeout(build, 150); return; }
+        const chart = window.myRiskChartInstance, store = document.getElementById('chart-data-store');
+        let L = [], S = [];
+        try { L = JSON.parse(store.getAttribute('data-labels') || '[]'); S = JSON.parse(store.getAttribute('data-scores') || '[]'); } catch (e) {}
+        Chart.defaults.color = '#94a3b8'; Chart.defaults.font.family = 'Inter, sans-serif';
+
+        /* range switcher: slices the already-loaded data */
+        document.querySelectorAll('#rangeSwitch button').forEach(b => b.onclick = () => {
+            document.querySelectorAll('#rangeSwitch button').forEach(x => x.classList.toggle('on', x === b));
+            const n = +b.dataset.n; chart.data.labels = n ? L.slice(-n) : L; chart.data.datasets[0].data = n ? S.slice(-n) : S; chart.update();
+        });
+
+        /* heat timeline */
+        const strip = document.getElementById('heatStrip');
+        S.forEach((v, i) => { const c = v >= 60 ? '#f43f5e' : v >= 30 ? '#f59e0b' : '#10b981'; strip.insertAdjacentHTML('beforeend', '<i title="' + (L[i] || '') + ' – ' + v + '%" style="background:' + c + ';opacity:' + (0.55 + Math.min(v, 100) / 230) + '"></i>'); });
+        if (!S.length) strip.innerHTML = '<span class="text-xs text-slate-500">No data yet.</span>';
+
+        /* doughnut */
+        const sc = document.getElementById('splitChart'), lg = +sc.dataset.legit || 0, fl = +sc.dataset.flagged || 0;
+        new Chart(sc, { type: 'doughnut', data: { labels: ['Legitimate', 'Flagged'], datasets: [{ data: (lg + fl) ? [lg, fl] : [1, 0], backgroundColor: ['#10b981', '#f43f5e'], borderColor: '#0b1020', borderWidth: 3, hoverOffset: 8 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, color: '#94a3b8' } } } },
+            plugins: [{ id: 'center', afterDraw(c) { const { ctx, chartArea: a } = c; ctx.save(); ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = '800 28px Inter'; ctx.fillText(lg + fl, (a.left + a.right) / 2, (a.top + a.bottom) / 2 + 8); ctx.restore(); } }] });
+
+        /* policy bar – read from the history table */
+        const agg = {};
+        document.querySelectorAll('table.ig-table tbody tr').forEach(r => { const p = r.cells[1].textContent.trim(), v = parseFloat(r.cells[4].textContent); if (!isNaN(v)) { (agg[p] = agg[p] || []).push(v); } });
+        const names = Object.keys(agg), avg = names.map(n => agg[n].reduce((a, b) => a + b, 0) / agg[n].length);
+        new Chart(document.getElementById('policyChart'), { type: 'bar', data: { labels: names, datasets: [{ label: 'Avg risk (%)', data: avg, borderRadius: 8, backgroundColor: avg.map(v => v >= 60 ? '#f43f5e' : v >= 30 ? '#f59e0b' : '#6366f1') }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, grid: { color: 'rgba(148,163,184,.08)' } }, x: { grid: { display: false } } } } });
+    }
+    build();
+})();
+</script>
+{% endblock %}

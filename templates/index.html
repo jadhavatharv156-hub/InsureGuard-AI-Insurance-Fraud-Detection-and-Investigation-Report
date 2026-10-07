@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-12 py-10 px-4 max-w-6xl mx-auto relative">
+    <div class="ig-hero-orb" style="top:-60px;left:50%;transform:translateX(-50%);"></div>
+    <!-- Hero Section -->
+    <div class="text-center max-w-3xl mx-auto space-y-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-bolt text-emerald-400"></i> Next-Gen Fraud Prevention
+        </span>
+        <h1 class="text-4xl sm:text-6xl font-black ig-gradient-text tracking-tight leading-tight pb-1">
+            AI-Powered Insurance Claim Risk Assessment
+        </h1>
+        <p class="text-slate-400 text-base leading-relaxed">
+            Detect suspicious claims instantly, reduce processing fraud loss, and leverage explainable ML decisioning for every policyholder submission.
+        </p>
+        <div class="pt-4 flex justify-center gap-4">
+            {% if session.get('user') %}
+                <a href="{{ url_for('predict') }}" class="font-bold px-6 py-3 flex items-center gap-2 ig-btn-emerald">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Start Claim Assessment
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="font-bold px-6 py-3 flex items-center gap-2 ig-btn-emerald">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </a>
+                <a href="{{ url_for('login') }}" class="font-semibold px-6 py-3 ig-btn-ghost">
+                    User Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Hero Visual: live risk-engine preview (decorative) -->
+    <div class="max-w-3xl mx-auto ig-card p-6 ig-float">
+        <div class="flex flex-col sm:flex-row items-center gap-6">
+            <div class="ig-gauge" style="--pct: 82; --col: #f43f5e;"><span>82%</span></div>
+            <div class="flex-1 w-full space-y-3">
+                <div class="flex items-center justify-between text-[11px] uppercase tracking-widest font-bold text-slate-400">
+                    <span>Live Risk Engine Preview</span>
+                    <span class="text-red-400">● High Risk</span>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs text-slate-300 mb-1"><span>Claim amount anomaly</span><span class="text-red-400 font-bold">+34%</span></div>
+                    <div class="ig-bar"><i style="width:78%;background:linear-gradient(90deg,#f43f5e,#fb7185)"></i></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs text-slate-300 mb-1"><span>Policy age vs. claim timing</span><span class="text-amber-400 font-bold">+21%</span></div>
+                    <div class="ig-bar"><i style="width:55%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></i></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs text-slate-300 mb-1"><span>Evidence authenticity</span><span class="text-emerald-400 font-bold">-9%</span></div>
+                    <div class="ig-bar"><i style="width:22%;background:linear-gradient(90deg,#10b981,#34d399)"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="ig-card ig-card-sm p-6 space-y-3">
+            <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400">
+                <i class="fa-solid fa-brain text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-200">ML Risk Scoring</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Evaluates claims against historical behavioral indicators using trained classification pipelines.</p>
+        </div>
+
+        <div class="ig-card ig-card-sm p-6 space-y-3">
+            <div class="w-12 h-12 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-400">
+                <i class="fa-solid fa-chart-line text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-200">SHAP Explainability</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Identifies exact policy attributes pushing a claim into high-risk assessment thresholds.</p>
+        </div>
+
+        <div class="ig-card ig-card-sm p-6 space-y-3">
+            <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-400">
+                <i class="fa-solid fa-user-shield text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-200">SIU Operations Desk</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Equips fraud managers and analysts with full audit logs and operations reporting.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

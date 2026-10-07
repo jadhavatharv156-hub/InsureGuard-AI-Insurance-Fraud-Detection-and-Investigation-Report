@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-5xl mx-auto py-8 px-4">
+    <div class="ig-card grid lg:grid-cols-2 overflow-hidden">
+        <div class="ig-auth-art">
+            <svg width="92" height="92" viewBox="0 0 64 64" fill="none" class="ig-float"><defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><circle cx="32" cy="32" r="30" stroke="rgba(129,140,248,.25)" stroke-dasharray="3 4"/><path d="M32 8 13 15v14c0 12 8 21 19 24 11-3 19-12 19-24V15z" fill="url(#ag)" opacity=".95"/><path d="m24 32 6 6 11-12" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div><h3 class="text-2xl font-extrabold text-white mb-2">Join InsureGuard</h3><p class="text-sm text-slate-400">Create a policyholder account and get instant, explainable fraud-risk insight.</p></div>
+            <ul class="space-y-3">
+                <li><i class="fa-solid fa-circle-check"></i> ML-driven fraud risk scoring</li>
+                <li><i class="fa-solid fa-circle-check"></i> Image forensics &amp; duplicate detection</li>
+                <li><i class="fa-solid fa-circle-check"></i> Transparent, explainable decisions</li>
+            </ul>
+        </div>
+    <div class="p-8 space-y-6">
+        <div class="text-center space-y-2">
+            <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mx-auto flex items-center justify-center text-emerald-400">
+                <i class="fa-solid fa-user-plus text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-100">Create Account</h2>
+            <p class="text-xs text-slate-400">Register as a policyholder to evaluate claims</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('register') }}" class="space-y-4">
+            <div>
+                <label class="ig-label">Choose Username</label>
+                <div class="relative">
+                    <i class="fa-solid fa-user absolute left-3 top-3 text-slate-500 text-sm"></i>
+                    <input type="text" name="username" required placeholder="Choose a username" class="ig-input !pl-10">
+                </div>
+            </div>
+
+            <div>
+                <label class="ig-label">Password</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-500 text-sm"></i>
+                    <input type="password" name="password" required placeholder="••••••••" class="ig-input !pl-10" data-strength>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full font-bold py-3 mt-2 ig-btn-emerald">
+                Create Account
+            </button>
+        </form>
+
+        <p class="text-center text-xs text-slate-400">
+            Already registered? <a href="{{ url_for('login') }}" class="text-emerald-400 hover:underline font-semibold">Sign in here</a>
+        </p>
+    </div>
+    </div>
+</div>
+{% endblock %}

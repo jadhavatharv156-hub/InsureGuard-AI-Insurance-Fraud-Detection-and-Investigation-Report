@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsureGuard - AI Fraud Prevention & Risk Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M32 4 8 13v17c0 15 10 26 24 30 14-4 24-15 24-30V13z'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' d='m21 32 8 8 15-16'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem('ig-theme')||'dark'}catch(e){}</script>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col font-sans">
+    <a href="#main" class="ig-skip">Skip to content</a>
+    <div id="ig-progress"></div>
+
+    <!-- NAVBAR -->
+    <nav class="ig-nav sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 gap-3">
+                
+                <!-- BRAND LOGO -->
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('index') }}" class="flex items-center gap-2.5 text-xl font-black tracking-wider text-indigo-300">
+                        <span class="ig-logo-mark w-9 h-9 rounded-xl flex items-center justify-center text-white">
+                            <svg width="20" height="20" viewBox="0 0 64 64" fill="none"><path d="M32 4 8 13v17c0 15 10 26 24 30 14-4 24-15 24-30V13z" fill="rgba(255,255,255,.22)" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/><path d="m21 32 8 8 15-16" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span>INSURE<span class="text-white">GUARD</span></span>
+                    </a>
+                    <span class="hidden md:inline-flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                        <span class="ig-live-dot"></span> Engine Online
+                    </span>
+                </div>
+
+                <!-- NAVIGATION LINKS -->
+                <div class="flex items-center gap-2 order-3">
+                <button type="button" id="ig-theme" class="ig-iconbtn" aria-label="Toggle light / dark theme" title="Toggle theme"><i class="fa-solid fa-circle-half-stroke"></i></button>
+                <button type="button" id="ig-burger" class="ig-iconbtn ig-burger" aria-label="Open menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+                </div>
+                <div class="ig-links order-2 ml-auto mr-3 flex items-center gap-1.5 text-xs font-semibold" id="ig-links">
+                    {% if session.get('user_id') %}
+                        {% if session.get('role') == 'ADMIN' %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-gear"></i> Admin Portal
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('dashboard') }}" class="ig-navlink px-3 py-2 text-slate-300 hover:text-white {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('predict') }}" class="ig-navlink px-3 py-2 text-slate-300 hover:text-white {% if request.endpoint == 'predict' %}active{% endif %}">
+                            Assess Risk
+                        </a>
+                        <a href="{{ url_for('profile') }}" class="ig-navlink px-3 py-2 text-slate-300 hover:text-white {% if request.endpoint == 'profile' %}active{% endif %}">
+                            Profile
+                        </a>
+                        <a href="{{ url_for('logout') }}" data-confirm="Sign out of InsureGuard?" class="ig-btn-danger px-3.5 py-2 text-xs">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="ig-navlink px-3 py-2 text-slate-300 hover:text-white">
+                            Login
+                        </a>
+                        <a href="{{ url_for('admin_login') }}" class="ig-navlink px-3 py-2 text-slate-400 hover:text-slate-200">
+                            Admin Access
+                        </a>
+                        <a href="{{ url_for('register') }}" class="ig-btn-primary px-4 py-2 text-xs">
+                            Register
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES CONTAINER -->
+    <div id="ig-toasts" aria-live="polite">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="ig-flash p-4 mb-3 text-xs font-semibold rounded-xl border {% if category == 'danger' %}bg-red-950/50 text-red-300 border-red-800{% elif category == 'success' %}bg-emerald-950/50 text-emerald-300 border-emerald-800{% else %}bg-slate-800 text-slate-200 border-slate-700{% endif %}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- MAIN CONTENT INJECTION -->
+    <main id="main" class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="ig-footer py-6 mt-12 text-center text-xs text-slate-500">
+        <p>&copy; InsureGuard AI Systems. Enterprise Risk Engine.</p>
+    </footer>
+
+
+    <!-- CONFIRM MODAL -->
+    <div id="ig-modal" role="dialog" aria-modal="true" aria-labelledby="ig-modal-msg">
+        <div class="box">
+            <div class="ico"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h3 class="text-lg font-bold text-white mb-1">Please confirm</h3>
+            <p id="ig-modal-msg" class="text-sm text-slate-400 mb-5"></p>
+            <div class="flex gap-3 justify-center">
+                <button type="button" id="ig-no" class="ig-btn-ghost px-5 py-2.5 text-sm">Cancel</button>
+                <button type="button" id="ig-yes" class="ig-btn-primary px-5 py-2.5 text-sm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    /* ===== InsureGuard UI enhancer (presentation only – no app logic) ===== */
+    (function () {
+        const $ = (s, r) => (r || document).querySelector(s);
+        const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+        const ready = f => document.readyState !== 'loading' ? f() : document.addEventListener('DOMContentLoaded', f);
+
+        ready(function () {
+            /* --- top progress bar --- */
+            const bar = $('#ig-progress');
+            const prog = p => { bar.style.opacity = 1; bar.style.width = p + '%'; };
+            prog(30); setTimeout(() => prog(70), 120);
+            window.addEventListener('load', () => { prog(100); setTimeout(() => { bar.style.opacity = 0; }, 350); });
+            document.addEventListener('click', e => {
+                const a = e.target.closest('a[href]');
+                if (a && !a.target && !a.hasAttribute('data-confirm') && a.getAttribute('href').charAt(0) !== '#' && a.origin === location.origin && !e.ctrlKey && !e.metaKey) { bar.style.width = '0'; setTimeout(() => prog(65), 30); }
+            });
+            window.addEventListener('pageshow', () => { bar.style.opacity = 0; $$('.ig-loading').forEach(b => { b.classList.remove('ig-loading'); b.disabled = false; }); });
+
+            /* --- theme + mobile menu --- */
+            $('#ig-theme').onclick = () => {
+                const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+                document.documentElement.dataset.theme = t;
+                try { localStorage.setItem('ig-theme', t); } catch (e) {}
+            };
+            const burger = $('#ig-burger'), links = $('#ig-links');
+            burger.onclick = () => { const o = links.classList.toggle('open'); burger.setAttribute('aria-expanded', o); burger.innerHTML = o ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>'; };
+
+            /* --- toasts --- */
+            $$('#ig-toasts .ig-flash').forEach(t => {
+                const x = document.createElement('button'); x.type = 'button'; x.innerHTML = '&times;'; x.setAttribute('aria-label', 'Dismiss');
+                const close = () => { t.classList.add('out'); setTimeout(() => t.remove(), 350); };
+                x.onclick = close; t.appendChild(x); setTimeout(close, 5200);
+            });
+
+            /* --- confirm modal --- */
+            const modal = $('#ig-modal'); let pending = null;
+            const askConfirm = (msg, fn) => { $('#ig-modal-msg').textContent = msg; pending = fn; modal.classList.add('show'); $('#ig-yes').focus(); };
+            const hide = () => { modal.classList.remove('show'); pending = null; };
+            $('#ig-no').onclick = hide; modal.addEventListener('click', e => { if (e.target === modal) hide(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+            $('#ig-yes').onclick = () => { const f = pending; hide(); f && f(); };
+            document.addEventListener('click', e => {
+                const el = e.target.closest('[data-confirm]'); if (!el) return;
+                e.preventDefault();
+                askConfirm(el.getAttribute('data-confirm'), () => {
+                    if (el.tagName === 'A') location.href = el.href;
+                    else if (el.form) { el.form.dataset.confirmed = '1'; el.form.requestSubmit ? el.form.requestSubmit(el) : el.form.submit(); }
+                });
+            });
+
+            /* --- animated counters + sparklines on stat cards --- */
+            const store = $('#chart-data-store'); let scores = [];
+            try { scores = JSON.parse(store.getAttribute('data-scores') || '[]'); } catch (e) {}
+            $$('.ig-stat-accent').forEach(card => {
+                const n = $('p.text-3xl', card); if (!n) return;
+                const m = n.textContent.trim().match(/^(\D*)([\d,]*\.?\d+)(\D*)$/);
+                if (m) {
+                    const end = parseFloat(m[2].replace(/,/g, '')), dec = (m[2].split('.')[1] || '').length, t0 = performance.now();
+                    const step = t => { const k = Math.min(1, (t - t0) / 900), v = end * (1 - Math.pow(1 - k, 3)); n.textContent = m[1] + v.toFixed(dec) + m[3]; if (k < 1) requestAnimationFrame(step); };
+                    requestAnimationFrame(step);
+                }
+                if (scores.length > 1) {
+                    const w = 84, h = 30, max = Math.max(...scores, 1), pts = scores.map((v, i) => (i / (scores.length - 1) * w).toFixed(1) + ',' + (h - 3 - v / max * (h - 6)).toFixed(1)).join(' ');
+                    const col = getComputedStyle(n).color;
+                    card.insertAdjacentHTML('beforeend', '<svg class="ig-spark" viewBox="0 0 ' + w + ' ' + h + '" fill="none"><polyline points="' + pts + '" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+                }
+            });
+
+            /* --- skeleton overlay on charts --- */
+            $$('canvas').forEach(c => {
+                const p = c.parentElement; p.classList.add('ig-skel-wrap');
+                const sk = document.createElement('div'); sk.className = 'ig-skel'; p.appendChild(sk);
+                setTimeout(() => { sk.classList.add('gone'); setTimeout(() => sk.remove(), 450); }, 700);
+            });
+
+            /* --- smart tables: labels, sort, filter chips, pagination --- */
+            $$('table.ig-table').forEach(tbl => {
+                const body = tbl.tBodies[0]; if (!body || !body.rows.length) return;
+                const heads = $$('thead th', tbl), wrap = tbl.closest('.ig-table-wrap') || tbl.parentElement;
+                $$('tr', body).forEach(r => $$('td', r).forEach((td, i) => td.setAttribute('data-label', (heads[i] || {}).textContent ? heads[i].textContent.trim() : '')));
+                const rows = () => Array.from(body.rows);
+                let size = 10, page = 1, chip = 'all';
+                const pats = { flagged: /flagged/i, passed: /passed|legitimate/i };
+
+                /* chips */
+                const hasBoth = rows().some(r => pats.flagged.test(r.textContent)) && rows().some(r => pats.passed.test(r.textContent));
+                if (hasBoth) {
+                    const c = document.createElement('div'); c.className = 'ig-chips no-print';
+                    c.innerHTML = '<button type="button" class="ig-chip on" data-c="all">All</button><button type="button" class="ig-chip" data-c="flagged">High Risk</button><button type="button" class="ig-chip" data-c="passed">Legitimate</button>';
+                    wrap.parentElement.insertBefore(c, wrap);
+                    c.onclick = e => { const b = e.target.closest('.ig-chip'); if (!b) return; chip = b.dataset.c; page = 1; $$('.ig-chip', c).forEach(x => x.classList.toggle('on', x === b)); render(); };
+                }
+                /* sort */
+                heads.forEach((th, i) => {
+                    if (/report|action/i.test(th.textContent)) return;
+                    th.classList.add('sortable'); th.insertAdjacentHTML('beforeend', '<span class="ar">&#8645;</span>');
+                    th.onclick = () => {
+                        const asc = !th.classList.contains('asc'); heads.forEach(h => h.classList.remove('asc', 'desc')); th.classList.add(asc ? 'asc' : 'desc');
+                        const val = r => { const t = (r.cells[i] ? r.cells[i].textContent : '').trim(); if (/^\d{4}-\d{2}-\d{2}/.test(t)) return Date.parse(t.replace(' ', 'T')) || 0; const n = parseFloat(t.replace(/[$,%\s]/g, '')); return (!isNaN(n) && /^[$#]?-?[\d,.]+%?$/.test(t)) ? n : t.toLowerCase(); };
+                        rows().sort((a, b) => { const x = val(a), y = val(b); return (x > y ? 1 : x < y ? -1 : 0) * (asc ? 1 : -1); }).forEach(r => body.appendChild(r));
+                        page = 1; render();
+                    };
+                });
+                /* toolbar */
+                const tb = document.createElement('div'); tb.className = 'ig-toolbar no-print';
+                tb.innerHTML = '<label>Show <select><option>10</option><option>25</option><option>50</option></select> rows</label><span class="info"></span><div class="ig-pager"></div>';
+                wrap.parentElement.insertBefore(tb, wrap.nextSibling);
+                $('select', tb).onchange = e => { size = +e.target.value; page = 1; render(); };
+
+                function render() {
+                    const vis = rows().filter(r => {
+                        const chipOk = chip === 'all' || pats[chip].test(r.textContent);
+                        r.classList.toggle('ig-chip-hide', !chipOk);
+                        return chipOk && r.style.display !== 'none';       /* respects the page's own search filter */
+                    });
+                    const pages = Math.max(1, Math.ceil(vis.length / size)); page = Math.min(page, pages);
+                    rows().forEach(r => r.classList.add('ig-page-hide'));
+                    vis.slice((page - 1) * size, page * size).forEach(r => r.classList.remove('ig-page-hide'));
+                    $('.info', tb).textContent = vis.length ? 'Showing ' + ((page - 1) * size + 1) + '–' + Math.min(page * size, vis.length) + ' of ' + vis.length : 'No matching records';
+                    const pg = $('.ig-pager', tb); pg.innerHTML = '';
+                    if (pages < 2) return;
+                    const mk = (t, p, dis, on) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = t; b.disabled = dis; if (on) b.className = 'on'; b.onclick = () => { page = p; render(); }; pg.appendChild(b); };
+                    mk('&lsaquo;', page - 1, page === 1);
+                    for (let p = 1; p <= pages; p++) if (p === 1 || p === pages || Math.abs(p - page) <= 1) mk(p, p, false, p === page);
+                    mk('&rsaquo;', page + 1, page === pages);
+                }
+                const search = document.getElementById('claimsSearch');
+                if (search && tbl.id === 'claimsTable') search.addEventListener('keyup', () => setTimeout(() => { page = 1; render(); }, 0));
+                render();
+            });
+
+            /* --- risk-factor impact bars --- */
+            $$('.ig-impact').forEach(b => {
+                const v = Math.min(100, Math.abs(parseFloat(b.textContent.replace(/[^0-9.\-]/g, '')) || 0));
+                const host = b.parentElement.firstElementChild; if (!host) return;
+                host.insertAdjacentHTML('beforeend', '<div class="ig-bar" style="margin-top:.5rem;width:100%;max-width:260px"><i style="width:0;background:linear-gradient(90deg,#f59e0b,#f43f5e);transition:width 1s ease"></i></div>');
+                const i = $('.ig-bar i', host); setTimeout(() => i.style.width = v + '%', 150);
+            });
+
+            /* --- inline validation, password eye + strength, input helpers --- */
+            $$('form').forEach(form => {
+                const fields = $$('input.ig-input, select.ig-input, textarea.ig-input', form);
+                fields.forEach(f => {
+                    const help = document.createElement('div'); help.className = 'ig-help';
+                    (f.closest('.relative') || f).insertAdjacentElement('afterend', help); f._help = help;
+                    const check = () => { if (!f.dataset.touched) return; const ok = f.checkValidity(); f.classList.toggle('ig-valid', ok && f.value !== ''); f.classList.toggle('ig-invalid', !ok); help.classList.toggle('err', !ok); if (!ok) help.textContent = f.validationMessage; else if (!f.dataset.hint) help.textContent = ''; };
+                    f.addEventListener('blur', () => { f.dataset.touched = 1; check(); });
+                    f.addEventListener('input', check);
+                    f.addEventListener('invalid', () => { f.dataset.touched = 1; check(); f.classList.add('ig-shake'); setTimeout(() => f.classList.remove('ig-shake'), 450); });
+                });
+                form.addEventListener('submit', e => {
+                    if (e.defaultPrevented) return;
+                    const btn = e.submitter || $('button[type=submit]', form); if (!btn || form.hasAttribute('data-noload')) return;
+                    setTimeout(() => { btn.classList.add('ig-loading'); btn.disabled = true; }, 0);
+                });
+            });
+            $$('input[type=password]').forEach(p => {
+                const host = p.parentElement; if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+                const eye = document.createElement('button'); eye.type = 'button'; eye.className = 'ig-eye'; eye.setAttribute('aria-label', 'Show password'); eye.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                const place = () => { eye.style.top = p.offsetTop + 'px'; eye.style.height = p.offsetHeight + 'px'; }; place(); window.addEventListener('resize', place); p.addEventListener('focus', place);
+                eye.onclick = () => { const s = p.type === 'password'; p.type = s ? 'text' : 'password'; eye.innerHTML = '<i class="fa-solid fa-eye' + (s ? '-slash' : '') + '"></i>'; };
+                host.appendChild(eye); p.style.paddingRight = '2.6rem';
+                if (p.hasAttribute('data-strength')) {
+                    const m = document.createElement('div'); m.innerHTML = '<div class="ig-strength"><i></i><i></i><i></i><i></i></div><div class="ig-strength-label"></div>';
+                    (p.closest('.relative') || p).insertAdjacentElement('afterend', m);
+                    p.addEventListener('input', () => {
+                        const v = p.value; let sc = 0; if (v.length >= 8) sc++; if (/[A-Z]/.test(v) && /[a-z]/.test(v)) sc++; if (/\d/.test(v)) sc++; if (/[^A-Za-z0-9]/.test(v)) sc++;
+                        const col = ['#f43f5e', '#f59e0b', '#22d3ee', '#10b981'][Math.max(0, sc - 1)];
+                        $$('i', m).forEach((b, i) => b.style.background = (v && i < sc) ? col : '');
+                        $('.ig-strength-label', m).textContent = v ? ['Weak', 'Fair', 'Good', 'Strong'][Math.max(0, sc - 1)] : '';
+                    });
+                }
+            });
+            const amt = $('input[name=claim_amount]'); if (amt) { amt._help.dataset.hint = 1; amt.addEventListener('input', () => { amt._help.textContent = amt.value ? '≈ $' + Number(amt.value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''; }); }
+            const ph = $('input[name=contact_phone]'); if (ph) ph.addEventListener('input', () => { ph.value = ph.value.replace(/[^\d+()\-\s]/g, ''); });
+
+            /* --- upload dropzone preview --- */
+            $$('input[type=file]').forEach(inp => {
+                const zone = inp.closest('.ig-dropzone') || inp.parentElement; const box = document.createElement('div'); zone.appendChild(box);
+                const show = () => {
+                    const f = inp.files[0]; box.innerHTML = ''; if (!f) return;
+                    const kb = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : Math.ceil(f.size / 1024) + ' KB';
+                    const th = f.type.indexOf('image/') === 0 ? '<img alt="preview" src="' + URL.createObjectURL(f) + '">' : '<div class="ph">📄</div>';
+                    box.innerHTML = '<div class="ig-preview">' + th + '<div class="text-xs"><div class="text-white font-semibold">' + f.name.replace(/</g, '&lt;') + '</div><div class="text-slate-400">' + kb + ' · ready to upload</div></div></div>';
+                };
+                inp.addEventListener('change', show);
+                ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('drag'); }));
+                ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('drag'); }));
+                zone.addEventListener('drop', e => { if (e.dataTransfer.files.length) { inp.files = e.dataTransfer.files; show(); } });
+            });
+
+            /* --- 3-step wizard for the Assess Risk form --- */
+            const wf = $('form[enctype="multipart/form-data"]');
+            if (wf && $('select[name=policy_type]', wf)) {
+                const panes = Array.from(wf.children).slice(0, 3), submit = $('button[type=submit]', wf), names = ['Policy', 'Incident', 'Evidence']; let cur = 0;
+                const head = document.createElement('div'); head.className = 'ig-steps';
+                head.innerHTML = names.map((n, i) => (i ? '<div class="line"></div>' : '') + '<div class="s"><b>' + (i + 1) + '</b><span>' + n + '</span></div>').join('');
+                wf.insertBefore(head, panes[0]);
+                const nav = document.createElement('div'); nav.className = 'ig-wizard-nav';
+                nav.innerHTML = '<button type="button" class="ig-btn-ghost px-5 py-2.5 text-xs" id="ig-back"><i class="fa-solid fa-arrow-left"></i> Back</button><button type="button" class="ig-btn-primary px-5 py-2.5 text-xs" id="ig-next">Next <i class="fa-solid fa-arrow-right"></i></button>';
+                wf.insertBefore(nav, submit);
+                const go = n => {
+                    cur = n; panes.forEach((p, i) => { p.style.display = i === n ? '' : 'none'; if (i === n) { p.classList.remove('ig-step-pane'); void p.offsetWidth; p.classList.add('ig-step-pane'); } });
+                    $$('.s', head).forEach((s, i) => { s.classList.toggle('active', i === n); s.classList.toggle('done', i < n); $('b', s).innerHTML = i < n ? '&#10003;' : i + 1; });
+                    $$('.line', head).forEach((l, i) => l.classList.toggle('fill', i < n));
+                    $('#ig-back').style.visibility = n ? 'visible' : 'hidden'; $('#ig-next').style.display = n === 2 ? 'none' : ''; submit.style.display = n === 2 ? '' : 'none';
+                };
+                $('#ig-back').onclick = () => go(cur - 1);
+                $('#ig-next').onclick = () => { const bad = $$('input,select,textarea', panes[cur]).find(f => !f.checkValidity()); if (bad) { bad.reportValidity(); return; } go(cur + 1); };
+                wf.addEventListener('keydown', e => { if (e.key === 'Enter' && cur < 2 && e.target.tagName !== 'BUTTON') { e.preventDefault(); $('#ig-next').click(); } });
+                go(0);
+            }
+        });
+    })();
+    </script>
+</body>
+</html>
