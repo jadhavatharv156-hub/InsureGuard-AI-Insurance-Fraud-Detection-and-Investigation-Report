@@ -104,7 +104,7 @@ export SECRET_KEY="change-me"
 export DATABASE_URL="mysql+pymysql://root:<your-password>@localhost:3306/insureguard_db"
 ```
 
-### 4. (Optional) Retrain the model
+### 4. Retrain the model
 
 ```bash
 python train_model.py
