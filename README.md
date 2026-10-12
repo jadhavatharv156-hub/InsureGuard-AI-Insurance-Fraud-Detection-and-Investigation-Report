@@ -153,9 +153,6 @@ Before deploying anywhere public:
 4. Push: `git push origin feature/your-feature`
 5. Open a Pull Request
 
-## 📄 License
-
-Add a license of your choice (e.g. MIT) and link it here.
 
 ## 👤 Author
 
